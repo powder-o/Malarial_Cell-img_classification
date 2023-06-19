@@ -6,18 +6,18 @@ Created on Wed Jun 14 06:32:42 2023
 """
 
 import numpy as np
-np.random.seed(1000)
+np.random.seed(1000)        # Setting seed as constant to get similar results on rerunning
 
 import cv2
 import os
 from PIL import Image 
 import keras
 
-os.environ['KERAS_BACKEND'] = 'tensorflow'
+os.environ['KERAS_BACKEND'] = 'tensorflow'        
 
-
-image_directory = 'C:/Users/dhruv/Downloads/archive/cell_images/'
-SIZE = 64
+########### Converting Images into 1D Vector ###############
+image_directory = 'C:/Users/dhruv/Downloads/archive/cell_images/'           # Add file path to dataset
+SIZE = 64        # Size of input Img
 dataset = []
 label = []
 
@@ -40,7 +40,7 @@ for i, image_name in enumerate(uninfected_images):
         label.append(1)
         
 
-
+############ Building Neural Network #############
 INPUT_SHAPE = (SIZE, SIZE, 3)
 inp = keras.layers.Input(shape=INPUT_SHAPE)
 
@@ -75,21 +75,21 @@ model.compile(optimizer='adam',
 
 print(model.summary())
 
-##########################
+######### Dataset Split-Test vs Train ############
 
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
 
-X_train, X_test, y_train, y_test = train_test_split(dataset,
-                                                    to_categorical(np.array(label)),test_size=0.20, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(dataset, to_categorical(np.array(label)),
+                                                    test_size=0.20, random_state=0)
 
+############ Fitting Model ##############
 history = model.fit(np.array(X_train), y_train, batch_size = 64, verbose = 1, epochs=25, validation_split=0.1, shuffle=False)
-
 
 print("Test accuracy : {:.2f}%".format(model.evaluate(np.array(X_test), np.array(y_test))[1]*100))
 
 
-
+############ Plotting Performance wrt Epochs #############
 import matplotlib.pyplot as plt
 f, (ax1, ax2) = plt.subplots(1, 2, figsize=(12,4))
 t = f.suptitle('CNN performance', fontsize = 12)
@@ -114,8 +114,8 @@ ax2.set_xlabel('Epoch')
 ax2.set_title('Loss')
 l1 = ax1.legend(loc="best")
 
-
-#model.save('malaria_cnn.h5')
+############ Saving Model ############
+model.save('malaria_cnn.h5')
 
 
 
